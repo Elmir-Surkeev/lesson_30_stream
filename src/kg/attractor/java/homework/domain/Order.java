@@ -57,10 +57,8 @@ public class Order {
     //----------------------------------------------------------------------
 
     public void calculateTotal() {
-        double summary = items.stream()
-        .mapToDouble(Item::getPrice)
-                .sum();
-        System.out.println("Total price: " + summary);
+        this.total = items.stream().mapToDouble(Item::getPrice).sum();
+        System.out.println("Total price: " + this.total);
     }
 
     public void printAllOrders() {
