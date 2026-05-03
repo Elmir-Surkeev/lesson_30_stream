@@ -1,9 +1,12 @@
 package kg.attractor.java.homework.domain;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import kg.attractor.java.homework.util.NotImplementedException;
+import static java.util.stream.Collectors.groupingBy;
 
 public class Order {
     // Этот блок кода менять нельзя! НАЧАЛО!
@@ -54,6 +57,21 @@ public class Order {
     //----------------------------------------------------------------------
 
     public void calculateTotal() {
-        throw new NotImplementedException("Вам надо реализовать этот метод!");
+        this.total = items.stream().mapToDouble(Item::getPrice).sum();
+        System.out.println("Total price: " + this.total);
     }
+
+    public void printAllOrders() {
+        items.forEach(i -> System.out.println(i.getName() + " " + i.getPrice()));
+    }
+
+//    public void printExpensiveOrders(int count) {
+//        List<Order> moreExpensive = items.stream()
+//                .sorted(Comparator.comparingDouble().reversed())
+//                .limit(count)
+//                .collect(Collectors.toList());
+//
+//        moreExpensive.forEach(i -> System.out.println(i.getName() + " " + i.getPrice()));
+//    }
+
 }
