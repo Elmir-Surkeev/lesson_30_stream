@@ -145,31 +145,33 @@ public class RestaurantOrders {
     }
 
     public String getCustomerWithMinTotal() {
-        Map<String, Double> totals = getTotalByCustomer();
-
-        String minCustomer = null;
-        double minTotal = Double.MAX_VALUE;
-
-        for (Map.Entry<String, Double> entry : totals.entrySet()) {
-            if (entry.getValue() < minTotal) {
-                minTotal = entry.getValue();
-                minCustomer = entry.getKey();
-            }
-        }
-        return minCustomer + " – $" + minTotal;
+        return getTotalByCustomer().entrySet().stream()
+                .min(Map.Entry.comparingByValue())
+                .map(e -> e.getKey() + " – $" + e.getValue())
+                .orElse("Нет данных");
     }
 
     public Map<String, Integer> getItemsSoldCount() {
         Map<String, Integer> result = new HashMap<>();
 
-        for (Order order : orders) {
-            for (Item item : order.getItems()) {
-                String name = item.getName();
-                // getOrDefault — если нет ключа, возвращает 0
-                result.put(name, result.getOrDefault(name, 0) + item.getAmount());
-            }
-        }
+        orders.stream()
+            .flatMap(order -> order.getItems().stream())
+            .forEach(item -> result.put(
+                    item.getName(),
+                    result.getOrDefault(item.getName(), 0) + item.getAmount()
+            ));
+
         return result;
+    }
+
+    public List<String> getEmailsByItemName(String itemName) {
+
+        return orders.stream()
+                .filter(order -> order.getItems().stream()
+                        .anyMatch(item ->  item.getName().equalsIgnoreCase(itemName)))
+                .map(order -> order.getCustomer().getEmail())
+                .collect(Collectors.toList());
+
     }
 
 

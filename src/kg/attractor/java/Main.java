@@ -149,6 +149,12 @@ public class Main {
                                 .forEach((name, count) ->
                                         System.out.println(name + " " + count + " шт."));
                         break;
+                    case 16:
+                        System.out.println("Введите название товара:");
+                        String itemName = sc.nextLine().toLowerCase();
+                        restaurantOrders.getEmailsByItemName(itemName)
+                                .forEach(System.out::println);
+                        break;
                     default:
                         System.out.println("Такого пункта нет. Попробуйте снова");
                 }
