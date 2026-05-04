@@ -18,7 +18,7 @@ public class Main {
         while (true) {
             try {
                 System.out.println(
-                        "\n=== Меню ===" +
+                        "\n Меню " +
                                 "\n 0 Выход" +
                                 "\n 1 Общая стоимость каждого заказа" +
                                 "\n 2 Все заказы" +
@@ -29,7 +29,14 @@ public class Main {
                                 "\n 7 Самый прибыльный и наименее прибыльный заказ на дом" +
                                 "\n 8 Заказы в диапазоне стоимости" +
                                 "\n 9 Общая стоимость всех заказов" +
-                                "\n 10 Уникальные email всех клиентов"
+                                "\n 9  Общая стоимость всех заказов" +
+                                "\n 10 Уникальные email всех клиентов" +
+                                "\n 11 Заказы сгруппированные по клиентам" +
+                                "\n 12 Сумма заказов по каждому клиенту" +
+                                "\n 13 Клиент с максимальной суммой" +
+                                "\n 14 Клиент с минимальной суммой" +
+                                "\n 15 Продажи товаров по количеству" +
+                                "\n 16 Email клиентов заказавших товар"
                 );
 
                 int choice = sc.nextInt();
@@ -110,7 +117,38 @@ public class Main {
                         restaurantOrders.getUniqueEmailsSorted()
                                 .forEach(System.out::println);
                         break;
+                    case 11:
+                        System.out.println(" Заказы по клиентам ");
+                        restaurantOrders.getOrderGroupCollect()
+                                .forEach((name, orderList) -> {
+                                    System.out.println(name + ":");
+                                    orderList.forEach(o -> System.out.println("  – $" + o.getTotal()));
+                                });
+                        break;
 
+                    case 12:
+                        System.out.println(" Сумма по клиентам ");
+                        restaurantOrders.getTotalByCustomer()
+                                .forEach((name, total) ->
+                                        System.out.println(name + " – $" + total));
+                        break;
+
+                    case 13:
+                        System.out.println("Клиент с максимальной суммой: "
+                                + restaurantOrders.getCustomerWithMaxTotal());
+                        break;
+
+                    case 14:
+                        System.out.println("Клиент с минимальной суммой: "
+                                + restaurantOrders.getCustomerWithMinTotal());
+                        break;
+
+                    case 15:
+                        System.out.println(" Продажи товаров ");
+                        restaurantOrders.getItemsSoldCount()
+                                .forEach((name, count) ->
+                                        System.out.println(name + " " + count + " шт."));
+                        break;
                     default:
                         System.out.println("Такого пункта нет. Попробуйте снова");
                 }

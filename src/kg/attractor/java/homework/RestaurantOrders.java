@@ -104,4 +104,74 @@ public class RestaurantOrders {
         orders.forEach(order -> emails.add(order.getCustomer().getEmail()));
         return new ArrayList<>(emails);
     }
+
+    public Map<String, List<Order>> getOrderGroupCollect(){
+        Map<String, List<Order>> groupCollect = new HashMap<>();
+        for (Order order : orders) {
+            String name = order.getCustomer().getFullName();
+
+            if(!groupCollect.containsKey(name)){
+                groupCollect.put(name, new ArrayList<>());
+            }
+            groupCollect.get(name).add(order);
+        }
+        return groupCollect;
+    }
+
+    public Map<String, Double> getTotalByCustomer() {
+        Map<String, Double> result = new HashMap<>();
+
+        for (Order order : orders) {
+            String name = order.getCustomer().getFullName();
+            result.put(name, result.getOrDefault(name, 0.0) + order.getTotal());
+        }
+        return result;
+    }
+
+
+    public String getCustomerWithMaxTotal() {
+        Map<String, Double> totals = getTotalByCustomer();
+
+        String maxCustomer = null;
+        double maxTotal = Double.MIN_VALUE;
+
+        for (Map.Entry<String, Double> entry : totals.entrySet()) {
+            if (entry.getValue() > maxTotal) {
+                maxTotal = entry.getValue();
+                maxCustomer = entry.getKey();
+            }
+        }
+        return maxCustomer + " – $" + maxTotal;
+    }
+
+    public String getCustomerWithMinTotal() {
+        Map<String, Double> totals = getTotalByCustomer();
+
+        String minCustomer = null;
+        double minTotal = Double.MAX_VALUE;
+
+        for (Map.Entry<String, Double> entry : totals.entrySet()) {
+            if (entry.getValue() < minTotal) {
+                minTotal = entry.getValue();
+                minCustomer = entry.getKey();
+            }
+        }
+        return minCustomer + " – $" + minTotal;
+    }
+
+    public Map<String, Integer> getItemsSoldCount() {
+        Map<String, Integer> result = new HashMap<>();
+
+        for (Order order : orders) {
+            for (Item item : order.getItems()) {
+                String name = item.getName();
+                // getOrDefault — если нет ключа, возвращает 0
+                result.put(name, result.getOrDefault(name, 0) + item.getAmount());
+            }
+        }
+        return result;
+    }
+
+
+
 }
