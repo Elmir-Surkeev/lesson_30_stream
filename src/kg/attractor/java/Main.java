@@ -44,7 +44,7 @@ public class Main {
 
                 switch (choice) {
                     case 0:
-                        System.out.println("До свидания!");
+                        System.out.println("Вы вышли");
                         return;
 
                     case 1:
@@ -98,9 +98,9 @@ public class Main {
                         break;
 
                     case 8:
-                        System.out.println("Введите минимальную сумму:");
+                        System.out.println("Введите минимальную сумму: ");
                         double min = sc.nextDouble();
-                        System.out.println("Введите максимальную сумму:");
+                        System.out.println("Введите максимальную сумму: ");
                         double max = sc.nextDouble();
                         restaurantOrders.getOrdersBetween(min, max)
                                 .forEach(o -> System.out.println(

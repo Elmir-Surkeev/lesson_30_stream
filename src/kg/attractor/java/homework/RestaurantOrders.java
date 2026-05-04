@@ -69,22 +69,18 @@ public class RestaurantOrders {
             return;
         }
 
-        Order mostExpensive = homeOrders.get(0);
-        Order cheapest = homeOrders.get(0);
+        Order mostExpensive = homeOrders.stream()
+                .max(Comparator.comparingDouble(Order::getTotal))
+                .get();
 
-        for (Order order : homeOrders) {
-            if (order.getTotal() > mostExpensive.getTotal()) {
-                mostExpensive = order;
-            }
-            if (order.getTotal() < cheapest.getTotal()) {
-                cheapest = order;
-            }
-        }
+        Order cheapest = homeOrders.stream()
+                .min(Comparator.comparingDouble(Order::getTotal))
+                .get();
 
         System.out.println("Самый прибыльный: " + mostExpensive.getCustomer().getFullName()
-                + " $ " + mostExpensive.getTotal());
+                + " " + mostExpensive.getTotal());
         System.out.println("Наименее прибыльный: " + cheapest.getCustomer().getFullName()
-                + " $ " + cheapest.getTotal());
+                + " " + cheapest.getTotal());
     }
 
     public List<Order> getOrdersBetween(double minOrderTotal, double maxOrderTotal) {
@@ -105,27 +101,18 @@ public class RestaurantOrders {
         return new ArrayList<>(emails);
     }
 
-    public Map<String, List<Order>> getOrderGroupCollect(){
-        Map<String, List<Order>> groupCollect = new HashMap<>();
-        for (Order order : orders) {
-            String name = order.getCustomer().getFullName();
-
-            if(!groupCollect.containsKey(name)){
-                groupCollect.put(name, new ArrayList<>());
-            }
-            groupCollect.get(name).add(order);
-        }
-        return groupCollect;
+    public Map<String, List<Order>> getOrderGroupCollect() {
+        return orders.stream()
+                .collect(Collectors.groupingBy(order -> order.getCustomer().getFullName()));
     }
 
     public Map<String, Double> getTotalByCustomer() {
-        Map<String, Double> result = new HashMap<>();
-
-        for (Order order : orders) {
-            String name = order.getCustomer().getFullName();
-            result.put(name, result.getOrDefault(name, 0.0) + order.getTotal());
-        }
-        return result;
+        return orders.stream()
+                .collect(Collectors.toMap(
+                        order -> order.getCustomer().getFullName(),
+                        Order::getTotal,
+                        Double::sum
+                ));
     }
 
 
@@ -171,9 +158,5 @@ public class RestaurantOrders {
                         .anyMatch(item ->  item.getName().equalsIgnoreCase(itemName)))
                 .map(order -> order.getCustomer().getEmail())
                 .collect(Collectors.toList());
-
     }
-
-
-
 }
