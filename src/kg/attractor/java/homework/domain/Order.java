@@ -65,13 +65,4 @@ public class Order {
         items.forEach(i -> System.out.println(i.getName() + " " + i.getPrice()));
     }
 
-//    public void printExpensiveOrders(int count) {
-//        List<Order> moreExpensive = items.stream()
-//                .sorted(Comparator.comparingDouble().reversed())
-//                .limit(count)
-//                .collect(Collectors.toList());
-//
-//        moreExpensive.forEach(i -> System.out.println(i.getName() + " " + i.getPrice()));
-//    }
-
 }

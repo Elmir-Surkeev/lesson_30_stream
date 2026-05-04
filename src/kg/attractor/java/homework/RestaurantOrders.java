@@ -69,22 +69,18 @@ public class RestaurantOrders {
             return;
         }
 
-        Order mostExpensive = homeOrders.get(0);
-        Order cheapest = homeOrders.get(0);
+        Order mostExpensive = homeOrders.stream()
+                .max(Comparator.comparingDouble(Order::getTotal))
+                .get();
 
-        for (Order order : homeOrders) {
-            if (order.getTotal() > mostExpensive.getTotal()) {
-                mostExpensive = order;
-            }
-            if (order.getTotal() < cheapest.getTotal()) {
-                cheapest = order;
-            }
-        }
+        Order cheapest = homeOrders.stream()
+                .min(Comparator.comparingDouble(Order::getTotal))
+                .get();
 
         System.out.println("Самый прибыльный: " + mostExpensive.getCustomer().getFullName()
-                + " $ " + mostExpensive.getTotal());
+                + " " + mostExpensive.getTotal());
         System.out.println("Наименее прибыльный: " + cheapest.getCustomer().getFullName()
-                + " $ " + cheapest.getTotal());
+                + " " + cheapest.getTotal());
     }
 
     public List<Order> getOrdersBetween(double minOrderTotal, double maxOrderTotal) {
@@ -103,5 +99,64 @@ public class RestaurantOrders {
         Set<String> emails = new TreeSet<>();
         orders.forEach(order -> emails.add(order.getCustomer().getEmail()));
         return new ArrayList<>(emails);
+    }
+
+    public Map<String, List<Order>> getOrderGroupCollect() {
+        return orders.stream()
+                .collect(Collectors.groupingBy(order -> order.getCustomer().getFullName()));
+    }
+
+    public Map<String, Double> getTotalByCustomer() {
+        return orders.stream()
+                .collect(Collectors.toMap(
+                        order -> order.getCustomer().getFullName(),
+                        Order::getTotal,
+                        Double::sum
+                ));
+    }
+
+
+    public String getCustomerWithMaxTotal() {
+        Map<String, Double> totals = getTotalByCustomer();
+
+        String maxCustomer = null;
+        double maxTotal = Double.MIN_VALUE;
+
+        for (Map.Entry<String, Double> entry : totals.entrySet()) {
+            if (entry.getValue() > maxTotal) {
+                maxTotal = entry.getValue();
+                maxCustomer = entry.getKey();
+            }
+        }
+        return maxCustomer + " – $" + maxTotal;
+    }
+
+    public String getCustomerWithMinTotal() {
+        return getTotalByCustomer().entrySet().stream()
+                .min(Map.Entry.comparingByValue())
+                .map(e -> e.getKey() + " – $" + e.getValue())
+                .orElse("Нет данных");
+    }
+
+    public Map<String, Integer> getItemsSoldCount() {
+        Map<String, Integer> result = new HashMap<>();
+
+        orders.stream()
+            .flatMap(order -> order.getItems().stream())
+            .forEach(item -> result.put(
+                    item.getName(),
+                    result.getOrDefault(item.getName(), 0) + item.getAmount()
+            ));
+
+        return result;
+    }
+
+    public List<String> getEmailsByItemName(String itemName) {
+
+        return orders.stream()
+                .filter(order -> order.getItems().stream()
+                        .anyMatch(item ->  item.getName().equalsIgnoreCase(itemName)))
+                .map(order -> order.getCustomer().getEmail())
+                .collect(Collectors.toList());
     }
 }
